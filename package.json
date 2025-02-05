@@ -4,7 +4,9 @@
   "description": "Cypress Test Automation Mastery for year 2025",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "login-test": "npx cypress run --spec 'cypress/e2e/features/login/login.cy.js' --browser chrome",
+    "login:test-suite": "npx cypress run --spec 'cypress/e2e/features/login/*.cy.js' --browser chrome"
   },
   "author": "",
   "license": "ISC",
