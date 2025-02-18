@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "login-test": "npx cypress run --spec 'cypress/e2e/features/login/login.cy.js' --browser chrome",
+    "register-test": "npx cypress run --spec 'cypress/e2e/features/registration/registration.cy.js' --browser chrome",
     "login:test-suite": "npx cypress run --spec 'cypress/e2e/features/login/*.cy.js' --browser chrome"
   },
   "author": "",

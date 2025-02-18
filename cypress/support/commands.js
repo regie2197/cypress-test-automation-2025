@@ -23,3 +23,41 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('login', (username, password) => { // FUNCTION OR METHOD --> Then i-call natin sya sa spec or test file natin.
+    cy.visit('https://parabank.parasoft.com/parabank/index.htm')
+    cy.get('input[name=username]').type(username)
+    cy.get('input[name=password]').type(`${password}{Enter}`) 
+});
+
+
+
+
+Cypress.Commands.add('loginAndSaveCookies', (userType) => {
+    cy.fixture('users').then((users) => {
+        const user = users[userType]; // Get user credentials
+
+        cy.visit('https://parabank.parasoft.com/parabank/index.htm');
+        cy.get('input[name=username]').type(user.username);
+        cy.get('input[name=password]').type(`${user.password}{enter}`);
+
+        // Ensure login is successful by checking the URL
+        cy.url().should('include', '/overview.htm');
+
+        // Save cookies after login
+        cy.getCookies().then((cookies) => {
+            Cypress.env('savedCookies', cookies);
+            console.log(cookies);
+        });
+    });
+});
+
+Cypress.Commands.add('restoreCookies', () => {
+    const savedCookies = Cypress.env('savedCookies');
+    if (savedCookies) {
+        savedCookies.forEach((cookie) => {
+            cy.setCookie(cookie.name, cookie.value);
+            console.log(savedCookies);
+        });
+    }
+});
