@@ -4,7 +4,7 @@
   "description": "Cypress Test Automation Mastery for year 2025",
   "main": "index.js",
   "scripts": {
-    "login-test": "npx cypress run --spec 'cypress/e2e/features/login/login.cy.js' --browser chrome",
+    "e2e-test": "npx cypress run --spec 'cypress/e2e/features/e2e.cy.js' --browser chrome",
     "register-test": "npx cypress run --spec 'cypress/e2e/features/registration/registration.cy.js' --browser chrome",
     "login:test-suite": "npx cypress run --spec 'cypress/e2e/features/login/*.cy.js' --browser chrome"
   },
