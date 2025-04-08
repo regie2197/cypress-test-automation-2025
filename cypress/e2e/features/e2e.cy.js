@@ -1,28 +1,31 @@
-describe('Authentication and Assertion Without cy.session()', () => {
+describe('Authentication & Add to Cart', () => {
 
-  before(() => {
-    cy.loginAndSaveCookies('validUser'); // Log in once and save cookies
-    //cy.login()
+    beforeEach(() => {
+      cy.visit('https://www.saucedemo.com/')
+      cy.get('[data-test="username"]').type('standard_user')
+      cy.get('[data-test="password"]').type('secret_sauce')
+      cy.get('[data-test="login-button"]').click()
+    });
+  
+    it('Should successfully login', () => {
+      // Verify we're on the inventory page after login
+      cy.url().should('include', '/inventory.html')
+      cy.get('.inventory_list').should('be.visible')
+    });
+  
+    it('Should successfully add to cart', () => {
+      // Add first product to cart
+      cy.get('[data-test="add-to-cart-sauce-labs-backpack"]').click()
+  
+      // Verify cart badge appears with 1 item
+      cy.get('.shopping_cart_badge').should('contain', '1')
+  
+      // Optionally, navigate to the cart and verify item is listed
+      cy.get('.shopping_cart_link').click()
+      cy.url().should('include', '/cart.html')
+      cy.get('.cart_item').should('have.length', 1)
+      cy.get('.inventory_item_name').should('contain', 'Sauce Labs Backpack').screenshot()
+    });
+  
   });
-
-  beforeEach(() => {
-    cy.restoreCookies();
-    cy.visit('https://parabank.parasoft.com/parabank/overview.htm'); // Navigate directly
-  });
-
-  it('Should assert Overview URL after login', () => {
-      cy.url().should('include', '/overview.htm');
-  });
-
-  const ACCOUNT_TYPE = {
-    SAVINGS: '1',
-    CHECKING: '0'
-};
-  it('Open New Account Menu is Visible and User is able to Open New Account', () => {
-    cy.contains('Open New Account').should('be.visible').click();
-    
-    cy.get('#type').select('SAVINGS');
-    cy.get('#type').should('have.value', ACCOUNT_TYPE.SAVINGS);
-  });
-
-});
+  

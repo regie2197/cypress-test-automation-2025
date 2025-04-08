@@ -1,0 +1,45 @@
+name: Cypress Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - [ main, staging ]
+  pull_request:
+    branches:
+      - [ main, staging ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      # Step 2: Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with: 
+          node-version: '20'
+      
+      # Step 3: Cache npm dependencies
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: npm ci
+      
+      # Step 5: Run login.cy.js test
+      - name: Run login.cy.js test
+        run: npm run login-test
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
