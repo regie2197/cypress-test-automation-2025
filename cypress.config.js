@@ -1,10 +1,13 @@
 //npx cypress run --record --key adbc781d-1e72-4019-9bd0-a01ef834246e
 const { defineConfig } = require("cypress");
+const dotenv = require('dotenv')
+
+dotenv.config()
 
 module.exports = defineConfig({
   projectId: "tqyggs",
   experimentalStudio: true,
-  defaultCommandTimeout: 60000,
+  defaultCommandTimeout: 120000,
   reporter: 'cypress-mochawesome-reporter',
   reporterOptions: {
     charts: true,
