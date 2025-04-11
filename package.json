@@ -4,15 +4,16 @@
   "description": "Cypress Test Automation Mastery for year 2025",
   "main": "index.js",
   "scripts": {
-    "e2e-test": "npx cypress run --spec 'cypress/e2e/features/e2e.cy.js' --browser chrome",
-    "register-test": "npx cypress run --spec 'cypress/e2e/features/registration/registration.cy.js' --browser chrome",
-    "login:test-suite": "npx cypress run --spec 'cypress/e2e/features/login/*.cy.js' --browser chrome"
+    "register-test": "npx cypress run --spec 'cypress/e2e/features/registration.cy.js' --browser chrome",
+    "ecom-workflow-test": "npx cypress run --spec 'cypress/e2e/features/ecom-workflow.cy.js' --browser chrome"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "cypress": "^14.0.1",
-    "cypress-mochawesome-reporter": "^3.8.2"
+    "@faker-js/faker": "^9.6.0",
+    "cypress": "^14.3.0",
+    "cypress-mochawesome-reporter": "^3.8.2",
+    "cypress-xpath": "^2.0.1"
   },
   "dependencies": {
     "dotenv": "^16.4.7"
