@@ -4,8 +4,8 @@
   "description": "Cypress Test Automation Mastery for year 2025",
   "main": "index.js",
   "scripts": {
-    "register-test": "npx cypress run --spec 'cypress/e2e/features/registration.cy.js' --browser chrome",
-    "ecom-workflow-test": "npx cypress run --spec 'cypress/e2e/features/ecom-workflow.cy.js' --browser chrome"
+    "register-test": "npx cypress run --spec 'cypress/e2e/features/parabank/registration.cy.js' --browser chrome",
+    "ecom-workflow-test": "npx cypress run --spec 'cypress/e2e/features/sauce-demo/ecom-workflow.cy.js' --browser chrome"
   },
   "author": "",
   "license": "ISC",

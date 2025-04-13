@@ -3,10 +3,11 @@ name: Cypress Tests
 on:
   push:
     branches:
-      - staging
+      [main, staging]
   pull_request:
     branches:
-      - staging
+      [main, staging]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -36,9 +37,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      # Step 5: Run login.cy.js test
+      # Step 5: Run Cypress E2E tests
       - name: Run Cypress E2E Test 
-        run: npm run e2e-test
+        run: npm run ecom-workflow-test
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

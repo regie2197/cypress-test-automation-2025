@@ -24,6 +24,7 @@ module.exports = defineConfig({
     uat: process.env.UAT_URL,
   },
   e2e: {
+
     //testIsolation: false,
     //baseUrl: "https://qa-practice.netlify.app",
     setupNodeEvents(on, config) {

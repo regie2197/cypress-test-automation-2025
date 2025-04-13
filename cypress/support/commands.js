@@ -46,10 +46,10 @@ Cypress.Commands.add('fillRegistrationForm', (customerData = generateCustomerDat
   cy.get('input[id="customer.username"]').type(customerData.username);
   cy.get('input[id="customer.password"]').type(customerData.password);
   cy.get('input[id="repeatedPassword"]').type(customerData.password);
-  
+
   cy.get('input[value="Register"]').click();
-  cy.get('h1.title').should('contain.text', 'Welcome'  + ' ' + customer.username);
-  cy.contains('Log Out').should('be.visible').click();
+  cy.get('h1.title').should('contain.text', 'Welcome' + ' ' + customer.username);
+  cy.contains('Log Out').should('be.visible').and('be.enabled').click();
 });
 
 Cypress.Commands.add('saveCart', () => {
@@ -63,6 +63,28 @@ Cypress.Commands.add('restoreCart', () => {
   const cart = Cypress.env('savedCart') || '[]';
   cy.window().then((win) => {
     win.localStorage.setItem('cart-contents', cart);
+  });
+});
+Cypress.Commands.add('assertNavMenus', () => {
+  const expectedNavItems = [
+    'Home',
+    'Products',
+    'Cart',
+    'Signup  Login',
+    'Test Cases',
+    'API Testing',
+    'Video Tutorials',
+    'Contact us'
+  ];
+
+  cy.get('.shop-menu > .nav > li > a').each(($el, index) => {
+    // Extract the full text of the <a> tag
+    cy.wrap($el)
+      .invoke('text')
+      .then((text) => {
+        const cleanedText = text.replace(/[^\w\s]/g, '').trim();
+        expect(cleanedText).to.equal(expectedNavItems[index]);
+      });
   });
 });
 
