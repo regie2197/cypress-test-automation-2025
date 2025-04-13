@@ -33,8 +33,5 @@ describe('E-Com Test Flow/Workflow', {testIsolation: false}, () => {
       cy.get('.cart_item').should('have.length', 1)
       cy.get('.inventory_item_name').should('contain', 'Sauce Labs Backpack')
     });
-    it.skip('Should successfully checkout item from cart', () => {
-      
-    });
   });
   
