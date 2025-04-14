@@ -132,3 +132,4 @@ dist
 #Cypress screenshots and reports
 cypress/screenshots/
 cypress/reports/
+cypress/downloads/

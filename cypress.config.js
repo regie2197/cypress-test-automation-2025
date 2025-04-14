@@ -1,6 +1,7 @@
 //npx cypress run --record --key adbc781d-1e72-4019-9bd0-a01ef834246e
 const { defineConfig } = require("cypress");
 const dotenv = require('dotenv')
+const { beforeRunHook, afterRunHook } = require('cypress-mochawesome-reporter/lib');
 
 dotenv.config()
 
@@ -13,6 +14,8 @@ module.exports = defineConfig({
   reporter: 'cypress-mochawesome-reporter',
   reporterOptions: {
     charts: true,
+    reportFilename: 'regression-test-report',
+    reportDir: 'cypress/downloads',
     reportPageTitle: 'Regression Testing Report',
     embeddedScreenshots: true,
     inlineAssets: true,
@@ -28,7 +31,15 @@ module.exports = defineConfig({
     //testIsolation: false,
     //baseUrl: "https://qa-practice.netlify.app",
     setupNodeEvents(on, config) {
-      require('cypress-mochawesome-reporter/plugin')(on);
+      on('before:run', async (details) => {
+        console.log('override before:run');
+        console.log('Running tests');
+        await beforeRunHook(details);
+      });
+      on('after:run', async () => {
+        console.log('override after:run');
+        await afterRunHook();
+      });
     },
   },
 });

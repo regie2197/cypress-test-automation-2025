@@ -1,28 +1,4 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+import RegistrationPage from './pages/registration.page';
 import { generateCustomerData } from './fakerUtils';
 
 Cypress.Commands.add('authSauceDemo', () => {
@@ -33,23 +9,11 @@ Cypress.Commands.add('authSauceDemo', () => {
     cy.get('[data-test="login-button"]').click()
   });
 });
-
+// Parabank Fill Registration form command
 Cypress.Commands.add('fillRegistrationForm', (customerData = generateCustomerData()) => {
-  cy.get('input[id="customer.firstName"]').type(customerData.firstName);
-  cy.get('input[id="customer.lastName"]').type(customerData.lastName);
-  cy.get('input[id="customer.address.street"]').type(customerData.address);
-  cy.get('input[id="customer.address.city"]').type(customerData.city);
-  cy.get('input[id="customer.address.state"]').type(customerData.state);
-  cy.get('input[id="customer.address.zipCode"]').type(customerData.zipCode);
-  cy.get('input[id="customer.phoneNumber"]').type(customerData.phoneNumber);
-  cy.get('input[id="customer.ssn"]').type(customerData.ssn);
-  cy.get('input[id="customer.username"]').type(customerData.username);
-  cy.get('input[id="customer.password"]').type(customerData.password);
-  cy.get('input[id="repeatedPassword"]').type(customerData.password);
-
-  cy.get('input[value="Register"]').click();
-  cy.get('h1.title').should('contain.text', 'Welcome' + ' ' + customer.username);
-  cy.contains('Log Out').should('be.visible').and('be.enabled').click();
+  RegistrationPage.fillSignUpForm(customerData);
+  RegistrationPage.submitSignUpForm();
+  RegistrationPage.verifySignUpSuccess(customerData.username);
 });
 
 Cypress.Commands.add('saveCart', () => {
@@ -77,9 +41,9 @@ Cypress.Commands.add('assertNavMenus', () => {
     'Contact us'
   ];
 
-  cy.get('.shop-menu > .nav > li > a').each(($el, index) => {
+  cy.get('.shop-menu > .nav > li > a').each(($element, index) => {
     // Extract the full text of the <a> tag
-    cy.wrap($el)
+    cy.wrap($element)
       .invoke('text')
       .then((text) => {
         const cleanedText = text.replace(/[^\w\s]/g, '').trim();

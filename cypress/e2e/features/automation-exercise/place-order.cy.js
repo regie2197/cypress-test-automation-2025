@@ -11,7 +11,7 @@ describe('Automation Exercise - Place Order Test Suite', () => {
         cy.assertNavMenus()
     });
     it('Should successfully place an order - Register before Checkout', () => {
-
+        
     });
     it('Should successfully place an order - Login before Checkout', () => {
 

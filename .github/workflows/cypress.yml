@@ -12,7 +12,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       # Step 1: Checkout the repository
       - name: Checkout
@@ -39,7 +39,40 @@ jobs:
       
       # Step 5: Run Cypress E2E tests
       - name: Run Cypress E2E Test 
-        run: npm run ecom-workflow-test
+        run: npm run faker-register-test
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      # Step 6: Archive Results Report
+      - name: Cypress Regression E2E Test Report
+        uses: actions/upload-artifact@v4
+        with:
+           name: regression-test-report
+           path: cypress/downloads/reports/regression-test-report.html
+
+      # Step 7: Archive Screenshot 
+      - name: Cypress Screenshot - Test Evidences
+        uses: actions/upload-artifact@v4
+        with:
+           name: checkout_screenshot
+           path: cypress/screenshots/
+
+      # Step 8: Upload report to GitHub Pages artifact
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: cypress/downloads/reports/regression-test-report.html
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+      # Step 1: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
