@@ -13,7 +13,7 @@ class RegistrationPage {
     confirmPasswordInput = 'input[id="repeatedPassword"]';
     registerButton = 'input[value="Register"]';
     welcomeMessage = 'h1.title';
-  
+    
     // Method to fill the signup form
     fillSignUpForm({
       firstName,

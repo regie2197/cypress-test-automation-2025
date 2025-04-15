@@ -1,5 +1,4 @@
 /// <reference types="cypress" />
-
 describe('Parabank Registration', () => {
     beforeEach(() => {
       cy.clearAllSessionStorage()
@@ -8,7 +7,7 @@ describe('Parabank Registration', () => {
 
     it('Should successfully register a Customer using Faker JS', () => {
         cy.fillRegistrationForm()
-        cy.screenshotWithTimestamp('screenshots/parabank', 'registration_success');
+        cy.screenshotWithTimestamp('', 'registration_success');
     });
 
 });

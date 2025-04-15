@@ -20,6 +20,7 @@ module.exports = defineConfig({
     embeddedScreenshots: true,
     inlineAssets: true,
     saveAllAttempts: false,
+    json: true,
   },
   env:{
     dev: process.env.DEV_URL,
