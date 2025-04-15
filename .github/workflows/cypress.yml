@@ -51,7 +51,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: report-${{ matrix.test-name }} # Unique artifact name for each test
-          path: cypress/reports/individual/*.html # Upload the HTML report
+          path: cypress/reports/individual/ # Upload all files in the directory
 
   deploy-test-report:
     needs: test
@@ -66,11 +66,17 @@ jobs:
         uses: actions/checkout@v4
 
       # Step 2: Download all test reports
-      - name: Download All Test Reports
+      - name: Download Test Reports - Faker Register Test
         uses: actions/download-artifact@v4
         with:
-          name: report-* # Download all uploaded artifacts
-          path: cypress/reports/merged/ # Save them in a single directory
+          name: report-faker-register-test # Match the artifact name from the upload step
+          path: cypress/reports/merged/
+
+      - name: Download Test Reports - Cart Persistent Test
+        uses: actions/download-artifact@v4
+        with:
+          name: report-cart-persistent-test # Match the artifact name from the upload step
+          path: cypress/reports/merged/
 
       # Step 3: Deploy all HTML reports to GitHub Pages
       - name: Deploy to GitHub Pages
