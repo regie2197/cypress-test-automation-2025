@@ -84,7 +84,22 @@ jobs:
           mv cypress/reports/merged/faker-register-test/index.html cypress/reports/merged/faker-register-test.html
           mv cypress/reports/merged/cart-persistent-test/index.html cypress/reports/merged/cart-persistent-test.html
 
-      # Step 4: Deploy all HTML reports to GitHub Pages
+      # Step 4: Generate a custom index.html file
+      - name: Generate Custom Index File
+        run: |
+          echo '<!DOCTYPE html>' > cypress/reports/merged/index.html
+          echo '<html>' >> cypress/reports/merged/index.html
+          echo '<head><title>Cypress Test Reports</title></head>' >> cypress/reports/merged/index.html
+          echo '<body>' >> cypress/reports/merged/index.html
+          echo '<h1>Cypress Test Reports</h1>' >> cypress/reports/merged/index.html
+          echo '<ul>' >> cypress/reports/merged/index.html
+          echo '<li><a href="faker-register-test.html">Faker Register Test Report</a></li>' >> cypress/reports/merged/index.html
+          echo '<li><a href="cart-persistent-test.html">Cart Persistent Test Report</a></li>' >> cypress/reports/merged/index.html
+          echo '</ul>' >> cypress/reports/merged/index.html
+          echo '</body>' >> cypress/reports/merged/index.html
+          echo '</html>' >> cypress/reports/merged/index.html
+
+      # Step 5: Deploy all HTML reports to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
