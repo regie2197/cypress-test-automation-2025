@@ -66,19 +66,23 @@ jobs:
         uses: actions/checkout@v4
 
       # Step 2: Download all test reports
-      - name: Download Test Reports
+      - name: Download Test Reports - Faker Register Test
         uses: actions/download-artifact@v4
         with:
-          name: report-*
-          path: cypress/reports/merged/
+          name: report-faker-register-test
+          path: cypress/reports/merged/faker-register-test/
+
+      - name: Download Test Reports - Cart Persistent Test
+        uses: actions/download-artifact@v4
+        with:
+          name: report-cart-persistent-test
+          path: cypress/reports/merged/cart-persistent-test/
 
       # Step 3: Rename or organize index.html files
       - name: Organize Reports
         run: |
-          for dir in cypress/reports/merged/*/; do
-            report_name=$(basename "$dir")
-            mv "$dir/index.html" "cypress/reports/merged/$report_name.html"
-          done
+          mv cypress/reports/merged/faker-register-test/index.html cypress/reports/merged/faker-register-test.html
+          mv cypress/reports/merged/cart-persistent-test/index.html cypress/reports/merged/cart-persistent-test.html
 
       # Step 4: Generate a custom index.html file
       - name: Generate Custom Index File
@@ -89,23 +93,21 @@ jobs:
           echo '<body>' >> cypress/reports/merged/index.html
           echo '<h1>Cypress Test Reports</h1>' >> cypress/reports/merged/index.html
           echo '<ul>' >> cypress/reports/merged/index.html
-          for file in cypress/reports/merged/*.html; do
-            if [ "$(basename "$file")" != "index.html" ]; then
-              report_name=$(basename "$file" .html)
-              echo "<li><a href=\"$report_name.html\">$report_name Report</a></li>" >> cypress/reports/merged/index.html
-            fi
-          done
+          echo '<li><a href="faker-register-test.html">Faker Register Test Report</a></li>' >> cypress/reports/merged/index.html
+          echo '<li><a href="cart-persistent-test.html">Cart Persistent Test Report</a></li>' >> cypress/reports/merged/index.html
           echo '</ul>' >> cypress/reports/merged/index.html
           echo '</body>' >> cypress/reports/merged/index.html
           echo '</html>' >> cypress/reports/merged/index.html
 
-      # Step 5: Upload files to GitHub Pages artifact
-      - name: Upload to GitHub Pages Artifact
+      # Step 5: Deploy all HTML reports to GitHub Pages
+      - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: cypress/reports/merged/ # Upload all HTML reports
-
-      # Step 6: Deploy to GitHub Pages
+      
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      
+      - name: List Files in Deployment Directory
+        run: ls -R cypress/reports/merged/
