@@ -2,11 +2,9 @@ name: Cypress Tests
 
 on:
   push:
-    branches:
-      [main, staging]
+    branches: [main, staging]
   pull_request:
-    branches:
-      [main, staging]
+    branches: [main, staging]
   workflow_dispatch:
 
 jobs:
@@ -14,20 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test-name: [faker-register-test, cart-persistent-test] # Add your spec file here
+        test-name: [faker-register-test, cart-persistent-test]
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4
-      
-      # Step 2: Setup Node.js
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
-        with: 
+        with:
           node-version: '20'
-      
-      # Step 3: Cache npm dependencies
+
       - name: Cache npm dependencies
         uses: actions/cache@v4
         with:
@@ -35,49 +30,47 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      
-      # Step 4: Install dependencies
+
       - name: Install dependencies
         run: npm ci
-      
-      # Step 5: Run Cypress E2E tests for each test script
+
       - name: Run Cypress E2E Test - ${{ matrix.test-name }}
         id: cypress-tests
         run: npm run ${{ matrix.test-name }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      # Step 6: Upload individual reports as artifacts
+
       - name: Upload Individual Test Report
         uses: actions/upload-artifact@v4
         with:
           name: report-${{ matrix.test-name }}
-          path: cypress/reports/individual/ # Ensure this matches the `reportDir` in your `cypress.config.js`
+          path: cypress/reports/individual/
 
   merge-reports:
     needs: test
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Step 2: Download all test reports
-      - name: Download Test Reports
+      - name: Download All Test Reports
         uses: actions/download-artifact@v4
         with:
-          name: report-*
-          path: cypress/reports/individual/ # Download all individual reports to this directory
+          path: cypress/reports/individual/
 
-      # Step 3: Merge reports
-      - name: Merge Test Reports
+      - name: Merge & Generate Enhanced HTML Report
         run: |
-          npx mochawesome-merge cypress/reports/individual/*.json > cypress/reports/merged-report.json
-          npx marge cypress/reports/merged-report.json --reportDir cypress/reports/merged --inline
+          npx mochawesome-merge cypress/reports/individual/**/*.json > cypress/reports/merged-report.json
+          npx marge cypress/reports/merged-report.json \
+            --reportDir cypress/reports/merged \
+            --reportFilename index.html \
+            --inline \
+            --charts \
+            --autoOpen \
+            --reportTitle "Cypress Test Report"
 
-      # Step 4: Upload merged report to GitHub Pages artifact
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -91,11 +84,9 @@ jobs:
       id-token: write
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Step 2: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

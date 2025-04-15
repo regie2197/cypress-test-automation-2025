@@ -21,6 +21,7 @@ module.exports = defineConfig({
     inlineAssets: true,
     saveAllAttempts: false,
     json: true,
+    html: true,
   },
   env:{
     dev: process.env.DEV_URL,
