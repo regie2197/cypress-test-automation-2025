@@ -79,10 +79,10 @@ jobs:
           path: cypress/reports/merged/cart-persistent-test/
 
       # Step 3: Rename or organize index.html files
-      #- name: Organize Reports
-       # run: |
-        #  mv cypress/reports/merged/faker-register-test/index.html cypress/reports/merged/faker-register-test.html
-         # mv cypress/reports/merged/cart-persistent-test/index.html cypress/reports/merged/cart-persistent-test.html
+      - name: Organize Reports
+        run: |
+          mv cypress/reports/merged/faker-register-test/index.html cypress/reports/merged/faker-register-test.html
+          mv cypress/reports/merged/cart-persistent-test/index.html cypress/reports/merged/cart-persistent-test.html
 
       # Step 4: Generate a custom index.html file
       - name: Generate Custom Index File
