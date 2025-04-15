@@ -4,10 +4,10 @@
   "description": "Cypress Test Automation Mastery for year 2025",
   "main": "index.js",
   "scripts": {
-  "register-test": "npx cypress run --spec 'cypress/e2e/features/parabank/registration.cy.js' --browser chrome --env reportFilename=register-test",
-  "cart-persistent-test": "npx cypress run --spec 'cypress/e2e/features/sauce-demo/cart-persistent.cy.js' --browser chrome --env reportFilename=cart-persistent-test",
-  "faker-register-test": "npx cypress run --spec 'cypress/e2e/features/parabank/registration-faker.cy.js' --browser chrome --env reportFilename=faker-register-test",
-  "ecom-workflow-test": "npx cypress run --spec 'cypress/e2e/features/sauce-demo/ecom-workflow.cy.js' --browser chrome --env reportFilename=ecom-workflow-test"
+  "register-test": "npx cypress run --spec 'cypress/e2e/features/parabank/registration.cy.js' --browser chrome",
+  "cart-persistent-test": "npx cypress run --spec 'cypress/e2e/features/sauce-demo/cart-persistent.cy.js' --browser chrome",
+  "faker-register-test": "npx cypress run --spec 'cypress/e2e/features/parabank/registration-faker.cy.js' --browser chrome",
+  "ecom-workflow-test": "npx cypress run --spec 'cypress/e2e/features/sauce-demo/ecom-workflow.cy.js' --browser chrome"
 },
   "author": "",
   "license": "ISC",

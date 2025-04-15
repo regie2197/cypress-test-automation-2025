@@ -12,17 +12,20 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test-name: [faker-register-test, cart-persistent-test]
+        test-name: [faker-register-test, cart-persistent-test] # Add spec file here
 
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4
-
+      
+      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
-        with:
+        with: 
           node-version: '20'
-
+      
+      # Step 3: Cache npm dependencies
       - name: Cache npm dependencies
         uses: actions/cache@v4
         with:
@@ -30,67 +33,47 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-
+      
+      # Step 4: Install dependencies
       - name: Install dependencies
         run: npm ci
-
+      
+      # Step 5: Run Cypress E2E tests for each test script
       - name: Run Cypress E2E Test - ${{ matrix.test-name }}
+        id: cypress-tests
         run: npm run ${{ matrix.test-name }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      
+      # Step 6: Upload individual HTML reports as artifacts
       - name: Upload Individual Test Report
         uses: actions/upload-artifact@v4
         with:
-          name: report-${{ matrix.test-name }}
-          path: cypress/reports/individual/
-
-  merge-reports:
-    needs: test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download All Test Reports
-        uses: actions/download-artifact@v4
-        with:
-          path: cypress/reports/individual/
-
-      - name: Install mochawesome tools
-        run: npm install --save-dev mochawesome-merge mochawesome-report-generator
-
-      - name: Merge & Generate Enhanced HTML Report
-        run: |
-          echo "Merging JSON reports..."
-          npx mochawesome-merge "cypress/reports/individual/.jsons/**/*.json" > cypress/reports/merged-report.json
-
-          echo "Generating HTML report..."
-          npx marge cypress/reports/merged-report.json \
-            --reportDir cypress/reports/merged \
-            --reportFilename index.html \
-            --inline \
-            --charts \
-            --reportTitle "Cypress Test Report"
-
-      - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: cypress/reports/merged/
+          name: report-${{ matrix.test-name }} # Unique artifact name for each test
+          path: cypress/reports/individual/*.html # Upload the HTML report
 
   deploy-test-report:
-    needs: merge-reports
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       pages: write
       id-token: write
 
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Step 2: Download all test reports
+      - name: Download All Test Reports
+        uses: actions/download-artifact@v4
+        with:
+          name: report-* # Download all uploaded artifacts
+          path: cypress/reports/merged/ # Save them in a single directory
+
+      # Step 3: Deploy all HTML reports to GitHub Pages
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: cypress/reports/merged/ # Upload all HTML reports

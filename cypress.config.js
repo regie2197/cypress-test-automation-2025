@@ -15,15 +15,13 @@ module.exports = defineConfig({
   reporter: "cypress-mochawesome-reporter",
   reporterOptions: {
     charts: true,
-    reportFilename: "regression-test-report", // Static fallback name
-    reportDir: "cypress/reports/individual",
-    overwrite: false,
+    reportDir: "cypress/reports/individual", // Directory for individual reports
+    overwrite: false, // Prevent overwriting reports
     reportPageTitle: "Regression Testing Report",
     embeddedScreenshots: true,
     inlineAssets: true,
     saveAllAttempts: false,
-    json: true,
-    html: false,
+    html: true,
   },
   env: {
     dev: process.env.DEV_URL,
@@ -32,6 +30,11 @@ module.exports = defineConfig({
   },
   e2e: {
     setupNodeEvents(on, config) {
+      // Register cypress-mochawesome-reporter hooks
+      require("cypress-mochawesome-reporter/plugin")(on);
+
+      // Custom hooks for before and after run
+      
       on("before:run", async (details) => {
         console.log("override before:run");
         await beforeRunHook(details);
@@ -41,6 +44,8 @@ module.exports = defineConfig({
         console.log("override after:run");
         await afterRunHook();
       });
+
+      return config;
     },
   },
 });
