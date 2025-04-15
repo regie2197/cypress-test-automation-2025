@@ -15,7 +15,7 @@ module.exports = defineConfig({
   reporterOptions: {
     charts: true,
     reportFilename: 'regression-test-report',
-    reportDir: 'cypress/downloads',
+    reportDir: 'cypress/reports/individual',
     reportPageTitle: 'Regression Testing Report',
     embeddedScreenshots: true,
     inlineAssets: true,
