@@ -35,7 +35,6 @@ jobs:
         run: npm ci
 
       - name: Run Cypress E2E Test - ${{ matrix.test-name }}
-        id: cypress-tests
         run: npm run ${{ matrix.test-name }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -60,15 +59,20 @@ jobs:
         with:
           path: cypress/reports/individual/
 
+      - name: Install mochawesome tools
+        run: npm install --save-dev mochawesome-merge mochawesome-report-generator
+
       - name: Merge & Generate Enhanced HTML Report
         run: |
-          npx mochawesome-merge cypress/reports/individual/**/*.json > cypress/reports/merged-report.json
+          echo "Merging JSON reports..."
+          npx mochawesome-merge "cypress/reports/individual/.jsons/**/*.json" > cypress/reports/merged-report.json
+
+          echo "Generating HTML report..."
           npx marge cypress/reports/merged-report.json \
             --reportDir cypress/reports/merged \
             --reportFilename index.html \
             --inline \
             --charts \
-            --autoOpen \
             --reportTitle "Cypress Test Report"
 
       - name: Upload GitHub Pages artifact
