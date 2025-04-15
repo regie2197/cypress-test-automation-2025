@@ -69,16 +69,22 @@ jobs:
       - name: Download Test Reports - Faker Register Test
         uses: actions/download-artifact@v4
         with:
-          name: report-faker-register-test # Match the artifact name from the upload step
-          path: cypress/reports/merged/
+          name: report-faker-register-test
+          path: cypress/reports/merged/faker-register-test/
 
       - name: Download Test Reports - Cart Persistent Test
         uses: actions/download-artifact@v4
         with:
-          name: report-cart-persistent-test # Match the artifact name from the upload step
-          path: cypress/reports/merged/
+          name: report-cart-persistent-test
+          path: cypress/reports/merged/cart-persistent-test/
 
-      # Step 3: Deploy all HTML reports to GitHub Pages
+      # Step 3: Rename or organize index.html files
+      - name: Organize Reports
+        run: |
+          mv cypress/reports/merged/faker-register-test/index.html cypress/reports/merged/faker-register-test.html
+          mv cypress/reports/merged/cart-persistent-test/index.html cypress/reports/merged/cart-persistent-test.html
+
+      # Step 4: Deploy all HTML reports to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
