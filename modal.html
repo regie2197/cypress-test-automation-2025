@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Window Modal Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+    .open-new-window-btn {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .open-new-window-btn:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <button class="open-new-window-btn">Open New Window Modal</button>
+
+  <script>
+    document.querySelector('.open-new-window-btn').addEventListener('click', () => {
+      const newWindow = window.open('', '_blank', 'width=400,height=300');
+      newWindow.document.write(`
+        <div style="font-family: Arial; text-align: center; padding: 20px;">
+          <h2>New Window Modal</h2>
+          <p>This is a modal in a new window.</p>
+          <button onclick="window.close()" style="padding: 10px 20px; background-color: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Close</button>
+        </div>
+      `);
+    });
+  </script>
+</body>
+</html>

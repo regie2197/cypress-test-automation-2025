@@ -1,0 +1,113 @@
+name: Cypress Tests
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-name: [faker-register-test, cart-persistent-test] # Add spec file here
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      # Step 2: Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with: 
+          node-version: '20'
+      
+      # Step 3: Cache npm dependencies
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: npm ci
+      
+      # Step 5: Run Cypress E2E tests for each test script
+      - name: Run Cypress E2E Test - ${{ matrix.test-name }}
+        id: cypress-tests
+        run: npm run ${{ matrix.test-name }}
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      # Step 6: Upload individual HTML reports as artifacts
+      - name: Upload Individual Test Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-${{ matrix.test-name }} # Unique artifact name for each test
+          path: cypress/reports/individual/ # Upload all files in the directory
+
+  deploy-test-report:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Step 2: Download all test reports
+      - name: Download Test Reports - Faker Register Test
+        uses: actions/download-artifact@v4
+        with:
+          name: report-faker-register-test
+          path: cypress/reports/merged/faker-register-test/
+
+      - name: Download Test Reports - Cart Persistent Test
+        uses: actions/download-artifact@v4
+        with:
+          name: report-cart-persistent-test
+          path: cypress/reports/merged/cart-persistent-test/
+
+      # Step 3: Rename or organize index.html files
+      - name: Organize Reports
+        run: |
+          mv cypress/reports/merged/faker-register-test/index.html cypress/reports/merged/faker-register-test.html
+          mv cypress/reports/merged/cart-persistent-test/index.html cypress/reports/merged/cart-persistent-test.html
+
+      # Step 4: Generate a custom index.html file
+      - name: Generate Custom Index File
+        run: |
+          echo '<!DOCTYPE html>' > cypress/reports/merged/index.html
+          echo '<html>' >> cypress/reports/merged/index.html
+          echo '<head><title>Cypress Test Reports</title></head>' >> cypress/reports/merged/index.html
+          echo '<body>' >> cypress/reports/merged/index.html
+          echo '<h1>Cypress Test Reports</h1>' >> cypress/reports/merged/index.html
+          echo '<ul>' >> cypress/reports/merged/index.html
+          echo '<li><a href="faker-register-test.html">Faker Register Test Report</a></li>' >> cypress/reports/merged/index.html
+          echo '<li><a href="cart-persistent-test.html">Cart Persistent Test Report</a></li>' >> cypress/reports/merged/index.html
+          echo '</ul>' >> cypress/reports/merged/index.html
+          echo '</body>' >> cypress/reports/merged/index.html
+          echo '</html>' >> cypress/reports/merged/index.html
+
+      # Step 5: Deploy all HTML reports to GitHub Pages
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: cypress/reports/merged/ # Upload all HTML reports
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      
+      - name: List Files in Deployment Directory
+        run: ls -R cypress/reports/merged/
