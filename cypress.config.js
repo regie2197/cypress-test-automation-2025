@@ -1,11 +1,9 @@
 const { defineConfig } = require("cypress");
 const dotenv = require("dotenv");
-const {
-  beforeRunHook,
-  afterRunHook,
-} = require("cypress-mochawesome-reporter/lib");
+const dayjs = require("dayjs");
+const sendReportToDiscord = require("./cypress/support/send-report-to-discord");
 
-dotenv.config();
+require("dotenv").config();
 
 module.exports = defineConfig({
   projectId: "tqyggs",
@@ -15,7 +13,7 @@ module.exports = defineConfig({
   reporter: "cypress-mochawesome-reporter",
   reporterOptions: {
     charts: true,
-    reportDir: "cypress/reports/individual", // Directory for individual reports
+    reportDir: "cypress/reports", // Directory for individual reports
     overwrite: false, // Prevent overwriting reports
     reportPageTitle: "Regression Testing Report",
     embeddedScreenshots: true,
@@ -24,25 +22,42 @@ module.exports = defineConfig({
     html: true,
   },
   env: {
-    dev: process.env.DEV_URL,
-    qa: process.env.QA_URL,
-    uat: process.env.UAT_URL,
+    projectName: process.env.PROJECT_NAME || "Cypress Test Automation",
+    environment: process.env.ENVIRONMENT || "QA",
+    API_KEY: process.env.API_KEY,
+    API_BASE_URL: process.env.API_BASE_URL || 'https://petstore.swagger.io/v2', // Ensure this is defined
   },
   e2e: {
+    baseUrl: process.env.API_BASE_URL || 'https://petstore.swagger.io/v2',
     setupNodeEvents(on, config) {
       // Register cypress-mochawesome-reporter hooks
       require("cypress-mochawesome-reporter/plugin")(on);
 
-      // Custom hooks for before and after run
-      
-      on("before:run", async (details) => {
-        console.log("override before:run");
-        await beforeRunHook(details);
-      });
+      on("after:run", async (results) => {
+        const date = dayjs().format("MMMM D, YYYY - h:mm A");
+        const projectName = config.env.projectName;
+        const environment = config.env.environment;
 
-      on("after:run", async () => {
-        console.log("override after:run");
-        await afterRunHook();
+        // Extract spec file names and test case details
+        const specDetails = results.runs.map((run) => {
+          const specFileName = run.spec.name;
+          const testCases = run.tests.map((test) => ({
+            name: test.title.join(" > "),
+            state: test.state,
+          }));
+          return { specFileName, testCases };
+        });
+
+        await sendReportToDiscord({
+          projectName,
+          environment,
+          date,
+          totalTests: results.totalTests,
+          totalPassed: results.totalPassed,
+          totalFailed: results.totalFailed,
+          totalSkipped: results.totalSkipped,
+          specDetails,
+        });
       });
 
       return config;

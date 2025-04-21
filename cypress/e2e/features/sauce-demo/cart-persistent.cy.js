@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 describe('Cart Persistence Test', () => {
     it('adds item to cart and saves cart contents', () => {
         cy.visit('https://www.saucedemo.com/');

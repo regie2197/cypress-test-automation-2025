@@ -51,7 +51,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: report-${{ matrix.test-name }} # Unique artifact name for each test
-          path: cypress/reports/individual/ # Upload all files in the directory
+          path: cypress/reports/ # Upload all files in the directory
 
   deploy-test-report:
     needs: test

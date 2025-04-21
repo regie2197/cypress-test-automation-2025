@@ -6,7 +6,7 @@ declare namespace Cypress {
        * 
        * Visit Sauce Demo and Login to it
        */
-      auth(): any;
+      authSauceDemo(): any;
      /**
        * Registration Command with Faker JS
        * 

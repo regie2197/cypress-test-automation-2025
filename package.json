@@ -4,22 +4,27 @@
   "description": "Cypress Test Automation Mastery for year 2025",
   "main": "index.js",
   "scripts": {
-  "register-test": "npx cypress run --spec 'cypress/e2e/features/parabank/registration.cy.js' --browser chrome",
-  "cart-persistent-test": "npx cypress run --spec 'cypress/e2e/features/sauce-demo/cart-persistent.cy.js' --browser chrome",
-  "faker-register-test": "npx cypress run --spec 'cypress/e2e/features/parabank/registration-faker.cy.js' --browser chrome",
-  "ecom-workflow-test": "npx cypress run --spec 'cypress/e2e/features/sauce-demo/ecom-workflow.cy.js' --browser chrome"
-},
+    "register-test": "npx cypress run --spec 'cypress/e2e/features/parabank/registration.cy.js' --browser chrome",
+    "cart-persistent-test": "npx cypress run --spec 'cypress/e2e/features/sauce-demo/cart-persistent.cy.js' --browser chrome",
+    "faker-register-test": "npx cypress run --spec 'cypress/e2e/features/parabank/registration-faker.cy.js' --browser chrome",
+    "ecom-workflow-test": "npx cypress run --spec 'cypress/e2e/features/sauce-demo/ecom-workflow.cy.js' --browser chrome",
+    "pet-store-api-test": "npx cypress run --spec 'cypress/e2e/api-testing/pet-store-api.cy.js'"
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",
     "cypress": "^14.3.0",
     "cypress-mochawesome-reporter": "^3.8.2",
+    "cypress-wait-until": "^3.0.2",
     "cypress-xpath": "^2.0.1",
     "mochawesome-merge": "^5.0.0",
     "mochawesome-report-generator": "^6.2.0"
   },
   "dependencies": {
+    "axios": "^1.8.4",
+    "cypress-plugin-api": "^2.11.2",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.4.7"
   }
 }
