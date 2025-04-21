@@ -13,7 +13,7 @@ module.exports = defineConfig({
   reporter: "cypress-mochawesome-reporter",
   reporterOptions: {
     charts: true,
-    reportDir: "cypress/reports", // Directory for individual reports
+    reportDir: "cypress/reports",
     overwrite: false, // Prevent overwriting reports
     reportPageTitle: "Regression Testing Report",
     embeddedScreenshots: true,
