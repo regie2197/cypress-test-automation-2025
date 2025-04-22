@@ -1,12 +1,14 @@
 
 let petId; // Shared variable to store the pet ID
+// {'testIsolation': false},
 
-describe('Pet Store API Tests', {'testIsolation': false}, () => {
+//const apiKey = Cypress.env('API_KEY') || 'special-key';
+
+describe('Pet Store API Tests', () => {
   const pet = {
     id: 12345,
     name: 'Fulgoso',
     status: 'available',
-    tags: ['cute', 'friendly', 'playful']
   };
 
   const updatedPet = {
@@ -16,6 +18,7 @@ describe('Pet Store API Tests', {'testIsolation': false}, () => {
   };
 
   // Create a pet before running the tests
+  // Action = Mag Request using cy.api then Assert using .then method and expect
   before(() => {
     cy.api({
       method: 'POST',
@@ -57,8 +60,7 @@ describe('Pet Store API Tests', {'testIsolation': false}, () => {
     cy.wrap(petId).should('exist')
     cy.waitUntil(
       () =>
-        cy
-          .api({
+        cy.api({
             method: 'GET',
             url: `/pet/${petId}`,
           })
