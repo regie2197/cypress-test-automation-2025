@@ -23,22 +23,22 @@ describe('Pet Store API Tests V2 with cy.request & cy.intercept', () => {
         statusCode: 200,
         body: { ...pet },
       });
-    }).as('createPet');
+    })
 
     cy.intercept('PUT', '/pet', {
       statusCode: 200,
       body: { ...updatedPet },
-    }).as('updatePet');
+    })
 
     cy.intercept('GET', `/pet/${pet.id}`, {
       statusCode: 200,
       body: { ...updatedPet },
-    }).as('getPet');
+    })
 
     cy.intercept('DELETE', `/pet/${pet.id}`, {
       statusCode: 200,
       body: { message: `${pet.id}` },
-    }).as('deletePet');
+    })
   });
 
   it('POST - Create a new pet', () => {

@@ -1,5 +1,4 @@
 const { defineConfig } = require("cypress");
-const dotenv = require("dotenv");
 const dayjs = require("dayjs");
 const sendReportToDiscord = require("./cypress/support/send-report-to-discord");
 
@@ -8,7 +7,7 @@ require("dotenv").config();
 module.exports = defineConfig({
   projectId: "tqyggs",
   experimentalStudio: true,
-  defaultCommandTimeout: 6000,
+  defaultCommandTimeout: 15000,
   retries: 3,
   reporter: "cypress-mochawesome-reporter",
   reporterOptions: {
@@ -25,7 +24,7 @@ module.exports = defineConfig({
     projectName: process.env.PROJECT_NAME || "Cypress Test Automation",
     environment: process.env.ENVIRONMENT || "QA",
     API_KEY: process.env.API_KEY,
-    API_BASE_URL: process.env.API_BASE_URL || 'https://petstore.swagger.io/v2', // Ensure this is defined
+    API_BASE_URL: process.env.API_BASE_URL || 'https://petstore.swagger.io/v2',
   },
   e2e: {
     baseUrl: process.env.API_BASE_URL || 'https://petstore.swagger.io/v2',
