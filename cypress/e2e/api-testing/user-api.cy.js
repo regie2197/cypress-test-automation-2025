@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-describe('User API Tests', { testIsolation: false }, () => {
+describe('User API Tests', () => {
   
   let userId;
   let createdUserName;
@@ -34,15 +34,15 @@ describe('User API Tests', { testIsolation: false }, () => {
   it('Should get the created user by ID', () => {
     cy.api({
       method: 'GET',
-      url: `http://localhost:3000/api/users/${userId}`,
+      url: 'http://localhost:3000/api/users/' + userId,
       headers: {
         'Authorization': 'Bearer STATIC_TOKEN_123',
       },
     }).should((response) => {
       expect(response.status).to.eq(200);
       expect(response.body).to.have.property('id', userId);
-      expect(response.body).to.have.property('name', createdUserName); // Assert the username
-      expect(response.body).to.have.property('email', createdUserEmail); // Assert the email
+      expect(response.body).to.have.property('name', createdUserName);
+      expect(response.body).to.have.property('email', createdUserEmail);
     });
   });
 

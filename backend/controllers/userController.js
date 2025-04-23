@@ -10,7 +10,7 @@ const {
 } = require('../database/userDb');
 
 // Use a static token for testing
-const STATIC_TOKEN = 'STATIC_TOKEN_123';  // Static token for testing
+const STATIC_TOKEN = 'STATIC_TOKEN_123';
 
 // Register
 async function register(req, res) {
