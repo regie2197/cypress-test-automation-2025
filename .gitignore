@@ -134,3 +134,4 @@ cypress/screenshots/
 cypress/reports/
 cypress/reports/individual/
 cypress/downloads/
+modal.html
