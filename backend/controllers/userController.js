@@ -69,18 +69,41 @@ async function updateUser(req, res) {
   res.json({ message: 'User updated', user: { id: user.id, name, email } });
 }
 
-// Patch (PATCH)
 async function patchUser(req, res) {
-  const patchData = { ...req.body };
-  if (patchData.password) {
-    patchData.password = await hash(patchData.password, 10);
+  try {
+    const patchData = { ...req.body };
+    const updateFields = [];
+
+    // Check which fields are being updated
+    if (patchData.name) updateFields.push('name');
+    if (patchData.email) updateFields.push('email');
+    if (patchData.password) {
+      patchData.password = await hash(patchData.password, 10);
+      updateFields.push('password');
+    }
+
+    // Update the user in the database
+    const user = await patchUserDb(req.params.id, patchData);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Log the returned user for debugging
+    console.log('Updated User:', user);
+
+    // Construct the response message based on updated fields
+    const message =
+      updateFields.length > 0
+        ? `Successfully updated the ${updateFields.join(', ')}`
+        : 'No fields were updated';
+
+    // Exclude the password from the response
+    const { password, ...safeUser } = user;
+
+    // Send the response
+    res.json({ message, user: safeUser });
+  } catch (err) {
+    console.error(err); // Log the error for debugging
+    res.status(500).json({ message: 'Internal Server Error' });
   }
-
-  const user = patchUserDb(req.params.id, patchData);
-  if (!user) return res.status(404).json({ message: 'User not found' });
-
-  const { password, ...safeUser } = user;
-  res.json({ message: 'User patched', user: safeUser });
 }
 
 // Delete
