@@ -108,9 +108,14 @@ async function patchUser(req, res) {
 
 // Delete
 function deleteUser(req, res) {
+try {  
   const success = deleteUserDb(req.params.id);
   if (!success) return res.status(404).json({ message: 'User not found' });
   res.json({ message: 'User deleted' });
+} catch (err) {
+  console.error(err);
+  res.status(500).json({ message: 'Internal Server Error' });
+}
 }
 
 module.exports = {
