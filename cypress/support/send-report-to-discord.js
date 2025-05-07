@@ -1,5 +1,5 @@
-const axios = require("axios"); // Import axios
-require("dotenv").config(); // Load environment variables
+const axios = require("axios"); 
+require("dotenv").config();
 
 const sendReportToDiscord = async ({
   projectName,
@@ -11,7 +11,7 @@ const sendReportToDiscord = async ({
   totalSkipped,
   specDetails,
 }) => {
-  const webhookUrl = process.env.DISCORD_WEBHOOK_URL; // Use Discord webhook URL
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
   if (!webhookUrl) {
     console.error("DISCORD_WEBHOOK_URL is not defined in the .env file.");
@@ -34,7 +34,7 @@ const sendReportToDiscord = async ({
         ],
         footer: {
           text: "Cypress Test Automation",
-          icon_url: "https://cdn-icons-png.flaticon.com/512/5968/5968292.png", // Optional: Add a footer icon
+          icon_url: "https://cdn-icons-png.flaticon.com/512/5968/5968292.png",
         },
         timestamp: new Date().toISOString(),
       },
@@ -58,18 +58,18 @@ const sendReportToDiscord = async ({
                 .join("\n")
           )
           .join("\n\n"),
-        color: 3447003, // Blue for details
+        color: 3447003,
       },
     ],
   };
 
   try {
-    const response = await axios.post(webhookUrl, messagePayload); // Send the payload to Discord
+    const response = await axios.post(webhookUrl, messagePayload);
     console.log("Report sent to Discord successfully:", response.status);
   } catch (error) {
     console.error("Failed to send report to Discord:", error.message);
     if (error.response) {
-      console.error("Response data:", error.response.data); // Log error response data
+      console.error("Response data:", error.response.data); // Log error response data for debugging
     }
   }
 };

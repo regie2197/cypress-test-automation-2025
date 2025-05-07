@@ -9,6 +9,10 @@ module.exports = defineConfig({
   experimentalStudio: true,
   defaultCommandTimeout: 15000,
   retries: 3,
+  watchForFileChanges: false,
+  //requestTimeout: 15000,    // This will work with cy.request() and cy.intercept() - di ko sure kay cy.api() haha
+  //responseTimeout: 40000,
+  //video: true,
   reporter: "cypress-mochawesome-reporter",
   reporterOptions: {
     charts: true,
@@ -20,14 +24,7 @@ module.exports = defineConfig({
     saveAllAttempts: false,
     html: true,
   },
-  env: {
-    projectName: process.env.PROJECT_NAME || "Cypress Test Automation",
-    environment: process.env.ENVIRONMENT || "QA",
-    API_KEY: process.env.API_KEY,
-    API_BASE_URL: process.env.API_BASE_URL || 'https://petstore.swagger.io/v2',
-  },
   e2e: {
-    baseUrl: process.env.API_BASE_URL || 'https://petstore.swagger.io/v2',
     setupNodeEvents(on, config) {
       // Register cypress-mochawesome-reporter hooks
       require("cypress-mochawesome-reporter/plugin")(on);

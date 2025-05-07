@@ -43,6 +43,7 @@ async function login(req, res) {
 // Get All Users
 function getAll(req, res) {
   const users = getAllUsers().map(({ password, ...u }) => u);
+  if (users.length === 0) return res.status(404).json({ message: 'No users found' });
   res.json(users);
 }
 

@@ -1,6 +1,6 @@
 import { generateUserRegistrationData } from '../../support/fakerUtils';
 
-describe('User API Tests', () => {
+describe('User API Tests', { env: { requestMode: true }}, () => {
   
   let userId;
   let createdUserName;
@@ -8,8 +8,8 @@ describe('User API Tests', () => {
 
   it('Should create a user successfully', () => {
     const newUser = generateUserRegistrationData();
-
-    cy.api({
+    
+    cy.request({
       method: 'POST',
       url: '/api/users/register',
       body: newUser,
@@ -27,7 +27,7 @@ describe('User API Tests', () => {
   });
 
   it('Should get the created user by ID', () => {
-    cy.api({
+    cy.request({
       method: 'GET',
       url: `/api/users/${userId}`,
       headers: {
