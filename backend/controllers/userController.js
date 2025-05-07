@@ -43,6 +43,7 @@ async function login(req, res) {
 // Get All Users
 function getAll(req, res) {
   const users = getAllUsers().map(({ password, ...u }) => u);
+  if (users.length === 0) return res.status(404).json({ message: 'No users found' });
   res.json(users);
 }
 
@@ -108,9 +109,14 @@ async function patchUser(req, res) {
 
 // Delete
 function deleteUser(req, res) {
+try {  
   const success = deleteUserDb(req.params.id);
   if (!success) return res.status(404).json({ message: 'User not found' });
   res.json({ message: 'User deleted' });
+} catch (err) {
+  console.error(err);
+  res.status(500).json({ message: 'Internal Server Error' });
+}
 }
 
 module.exports = {

@@ -4,11 +4,15 @@
   "description": "Cypress Test Automation Mastery for year 2025",
   "main": "index.js",
   "scripts": {
+    "cy-qa": "npx cypress open --config-file qa.config.js",
+    "cy-prod": "npx cypress open --config-file prod.config.js",
+    "cy-staging": "npx cypress open --config-file staging.config.js",
     "register-test": "npx cypress run --spec 'cypress/e2e/features/parabank/registration.cy.js' --browser chrome",
     "cart-persistent-test": "npx cypress run --spec 'cypress/e2e/features/sauce-demo/cart-persistent.cy.js' --browser chrome",
     "faker-register-test": "npx cypress run --spec 'cypress/e2e/features/parabank/registration-faker.cy.js' --browser chrome",
     "ecom-workflow-test": "npx cypress run --spec 'cypress/e2e/features/sauce-demo/ecom-workflow.cy.js' --browser chrome",
-    "pet-store-api-test": "npx cypress run --spec 'cypress/e2e/api-testing/pet-store-api.cy.js'"
+    "user-api-qa": "npx cypress run --config-file qa.config.js --spec 'cypress/e2e/api-testing/user-api.cy.js'",
+    "user-api-staging": "npx cypress run --config-file staging.config.js --spec 'cypress/e2e/api-testing/user-api.cy.js'"
   },
   "author": "",
   "license": "ISC",

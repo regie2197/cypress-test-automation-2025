@@ -21,21 +21,10 @@ export function generateCustomerData() {
   };
 }
 
-export function generatePetData() {
+export function generateUserRegistrationData() {
   return {
-    id: faker.number.int({ min: 1, max: 10000 }),
-    category: {
-      id: faker.number.int({ min: 1, max: 100 }),
-      name: faker.animal.type(),
-    },
-    name: faker.animal.name(),
-    photoUrls: [faker.image.url()],
-    tags: [
-      {
-        id: faker.number.int({ min: 1, max: 100 }),
-        name: faker.word.adjective(),
-      },
-    ],
-    status: faker.helpers.arrayElement(['available', 'pending', 'sold']),
+    name: faker.person.firstName(),
+    email: faker.internet.email(),
+    password: 'password123',
   };
 }
