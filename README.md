@@ -3,6 +3,60 @@
 
 ---
 
+## 💡Quick Start Guide
+***Please do this after forking and cloning the Repository:***
+
+**📋Initial Setup**
+#### **1. Installation of Cypress & Other Dependencies **
+```bash
+npm install
+```
+#### **2. Install and Run Backend for API Testing (Open another terminal) **
+```bash
+cd backend
+
+npm install
+
+node server.js
+```
+**📋Opening Cypress Test Runner & Running Test in Headless Mode**
+```bash
+# Open Cypress Test Runner with QA environment
+npm run cy-qa
+
+# Open Cypress Test Runner with Staging environment
+npm run cy-staging
+
+# Open Cypress Test Runner with Prod environment (Prod - Preview)
+npm run cy-prod
+```
+**🌍 Environment Configuration**
+- Environment configs are stored in separate files:
+  - 🤖staging.config.js
+  - 🤖qa.config.js
+  - 🤖prod.config.js
+***These files extend the base cypress.config.js with environment-specific settings***
+
+**🧪 Example Spec Files / Test Files & How to Run It**
+```bash
+# Run the Parabank Registration with Faker in headless mode
+npm run faker-register-test
+
+# What if you want to run the test in Staging Env for API Testing?
+npm run user-api-staging
+``` 
+***If you're wondering why the test command looks like that, it's because I created a script shortcut in package.json***
+
+**📊 Test Reporting**
+- Reports are automatically generated using Mochawesome if you run test using npx cypress run
+- After test runs, a Discord notification is sent with test results:
+ - ✅ Test counts (passed/failed/skipped)
+ - ✅ Test case details by spec file
+ - ✅ Environment information
+ - ✅ Timestamp
+
+---
+
 ## 📘 User API Documentation
 **📄Overview**
 
