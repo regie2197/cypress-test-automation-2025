@@ -7,11 +7,14 @@
 ***Please do this after forking and cloning the Repository:***
 
 **📋Initial Setup**
-#### **📋 1. Installation of Cypress & Other Dependencies **
+#### 📋Installation of Cypress & Other Dependencies
+
 ```bash
 npm install
 ```
-#### **📋 2. Install and Run Backend for API Testing (Open another terminal) **
+
+#### 📋Install and Run Backend for API Testing (Open another terminal)
+
 ```bash
 cd backend
 
