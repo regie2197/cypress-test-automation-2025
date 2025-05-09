@@ -20,11 +20,8 @@
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",
     "cypress": "^14.3.0",
-    "cypress-mochawesome-reporter": "^3.8.2",
     "cypress-wait-until": "^3.0.2",
-    "cypress-xpath": "^2.0.1",
-    "mochawesome-merge": "^5.0.0",
-    "mochawesome-report-generator": "^6.2.0"
+    "cypress-xpath": "^2.0.1"
   },
   "dependencies": {
     "axios": "^1.8.4",

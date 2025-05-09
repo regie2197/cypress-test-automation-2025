@@ -13,22 +13,9 @@ module.exports = defineConfig({
   //requestTimeout: 15000,    // This will work with cy.request() and cy.intercept() - di ko sure kay cy.api() haha
   //responseTimeout: 40000,
   //video: true,
-  reporter: "cypress-mochawesome-reporter",
-  reporterOptions: {
-    charts: true,
-    reportDir: "cypress/reports",
-    overwrite: true,
-    reportPageTitle: "Regression Test Report",
-    embeddedScreenshots: true,
-    inlineAssets: true,
-    saveAllAttempts: false,
-    html: true,
-  },
   e2e: {
     setupNodeEvents(on, config) {
-      // Register cypress-mochawesome-reporter hooks
-      require("cypress-mochawesome-reporter/plugin")(on);
-
+      
       on("after:run", async (results) => {
         const date = dayjs().format("MMMM D, YYYY - h:mm A");
         const projectName = config.env.projectName || "Test Automation Demo";
