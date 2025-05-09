@@ -1,10 +1,6 @@
 name: Cypress Tests
 
 on:
- # push:
-  #  branches: [main, staging]
-  #pull_request:
-   # branches: [main, staging]
   workflow_dispatch:
 
 jobs:
@@ -12,20 +8,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test-name: [faker-register-test, cart-persistent-test] # Add spec file here
+        test-name: [faker-register-test, cart-persistent-test]
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4
       
-      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with: 
           node-version: '20'
       
-      # Step 3: Cache npm dependencies
       - name: Cache npm dependencies
         uses: actions/cache@v4
         with:
@@ -34,11 +27,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       
-      # Step 4: Install dependencies
       - name: Install dependencies
         run: npm ci
       
-      # Step 5: Run Cypress E2E tests for each test script
       - name: Run Cypress E2E Test - ${{ matrix.test-name }}
         id: cypress-tests
         run: npm run ${{ matrix.test-name }}
@@ -46,68 +37,118 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
-      # Step 6: Upload individual HTML reports as artifacts
+      # Debug what files are actually being generated
+      - name: Debug report directory structure
+        if: always()
+        run: |
+          echo "Contents of cypress/reports:"
+          find cypress/reports -type f | sort
+      
       - name: Upload Individual Test Report
+        if: always()  # Upload even if tests fail
         uses: actions/upload-artifact@v4
         with:
-          name: report-${{ matrix.test-name }} # Unique artifact name for each test
-          path: cypress/reports/ # Upload all files in the directory
+          name: report-${{ matrix.test-name }}
+          path: cypress/reports/
+          retention-days: 30
 
-  deploy-test-report:
+  # Simplified report consolidation approach
+  deploy-report:
     needs: test
     runs-on: ubuntu-latest
     permissions:
       pages: write
       id-token: write
-
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4
-
-      # Step 2: Download all test reports
-      - name: Download Test Reports - Faker Register Test
+      
+      # Create reports directory
+      - name: Create reports directory
+        run: mkdir -p cypress/reports/merged
+      
+      # Download all artifacts at once
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          name: report-faker-register-test
-          path: cypress/reports/merged/faker-register-test/
-
-      - name: Download Test Reports - Cart Persistent Test
-        uses: actions/download-artifact@v4
-        with:
-          name: report-cart-persistent-test
-          path: cypress/reports/merged/cart-persistent-test/
-
-      # Step 3: Rename or organize index.html files
-      - name: Organize Reports
+          path: temp-artifacts
+      
+      # Debug what was downloaded
+      - name: Show artifact contents
         run: |
-          mv cypress/reports/merged/faker-register-test/index.html cypress/reports/merged/faker-register-test.html
-          mv cypress/reports/merged/cart-persistent-test/index.html cypress/reports/merged/cart-persistent-test.html
-
-      # Step 4: Generate a custom index.html file
-      - name: Generate Custom Index File
+          echo "Downloaded artifacts:"
+          find temp-artifacts -type f | sort
+      
+      # Process the reports - adapt this to match your actual report structure
+      - name: Process reports
         run: |
-          echo '<!DOCTYPE html>' > cypress/reports/merged/index.html
-          echo '<html>' >> cypress/reports/merged/index.html
-          echo '<head><title>Cypress Test Reports</title></head>' >> cypress/reports/merged/index.html
-          echo '<body>' >> cypress/reports/merged/index.html
-          echo '<h1>Cypress Test Reports</h1>' >> cypress/reports/merged/index.html
-          echo '<ul>' >> cypress/reports/merged/index.html
-          echo '<li><a href="faker-register-test.html">Faker Register Test Report</a></li>' >> cypress/reports/merged/index.html
-          echo '<li><a href="cart-persistent-test.html">Cart Persistent Test Report</a></li>' >> cypress/reports/merged/index.html
-          echo '</ul>' >> cypress/reports/merged/index.html
-          echo '</body>' >> cypress/reports/merged/index.html
-          echo '</html>' >> cypress/reports/merged/index.html
-
-      # Step 5: Deploy all HTML reports to GitHub Pages
+          # Create directories for each test
+          mkdir -p cypress/reports/merged/faker-register-test
+          mkdir -p cypress/reports/merged/cart-persistent-test
+          
+          # See what HTML files we have and copy them to appropriate locations
+          if [ -d "temp-artifacts/report-faker-register-test" ]; then
+            # Find all HTML files for faker test
+            find temp-artifacts/report-faker-register-test -name "*.html" -type f -exec cp {} cypress/reports/merged/faker-register-test/ \;
+            # If there's an index.html in any subdirectory, copy it specifically
+            find temp-artifacts/report-faker-register-test -name "index.html" -type f -exec cp {} cypress/reports/merged/faker-register-test/ \;
+          fi
+          
+          if [ -d "temp-artifacts/report-cart-persistent-test" ]; then
+            # Find all HTML files for cart test
+            find temp-artifacts/report-cart-persistent-test -name "*.html" -type f -exec cp {} cypress/reports/merged/cart-persistent-test/ \;
+            # If there's an index.html in any subdirectory, copy it specifically
+            find temp-artifacts/report-cart-persistent-test -name "index.html" -type f -exec cp {} cypress/reports/merged/cart-persistent-test/ \;
+          fi
+          
+          # Create index files if they don't exist
+          if [ ! -f "cypress/reports/merged/faker-register-test/index.html" ]; then
+            echo "<html><body><h1>Faker Register Test Report</h1><p>No HTML report found</p></body></html>" > cypress/reports/merged/faker-register-test/index.html
+          fi
+          
+          if [ ! -f "cypress/reports/merged/cart-persistent-test/index.html" ]; then
+            echo "<html><body><h1>Cart Persistent Test Report</h1><p>No HTML report found</p></body></html>" > cypress/reports/merged/cart-persistent-test/index.html
+          fi
+      
+      # Create a main index file
+      - name: Generate main index.html
+        run: |
+          cat << EOF > cypress/reports/merged/index.html
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Cypress Test Reports</title>
+            <style>
+              body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+              h1 { color: #333366; }
+              ul { list-style-type: none; padding: 0; }
+              li { margin: 10px 0; padding: 15px; background-color: #f5f5f5; border-radius: 5px; }
+              a { color: #0066cc; text-decoration: none; font-weight: bold; }
+              a:hover { text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <h1>Cypress Test Reports</h1>
+            <ul>
+              <li><a href="faker-register-test/index.html">Faker Register Test Report</a></li>
+              <li><a href="cart-persistent-test/index.html">Cart Persistent Test Report</a></li>
+            </ul>
+            <p>Generated on $(date)</p>
+          </body>
+          </html>
+          EOF
+      
+      # Debug the final merged directory structure
+      - name: Show final structure
+        run: |
+          find cypress/reports/merged -type f | sort
+      
+      # Deploy to GitHub Pages
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: cypress/reports/merged/ # Upload all HTML reports
+          path: cypress/reports/merged/
       
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-      
-      - name: List Files in Deployment Directory
-        run: ls -R cypress/reports/merged/
