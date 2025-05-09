@@ -17,8 +17,8 @@ module.exports = defineConfig({
   reporterOptions: {
     charts: true,
     reportDir: "cypress/reports",
-    overwrite: false, // Prevent overwriting reports
-    reportPageTitle: "Regression Testing Report",
+    overwrite: true,
+    reportPageTitle: "Regression Test Report",
     embeddedScreenshots: true,
     inlineAssets: true,
     saveAllAttempts: false,
