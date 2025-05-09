@@ -12,7 +12,8 @@
     "faker-register-test": "npx cypress run --spec 'cypress/e2e/features/parabank/registration-faker.cy.js' --browser chrome",
     "ecom-workflow-test": "npx cypress run --spec 'cypress/e2e/features/sauce-demo/ecom-workflow.cy.js' --browser chrome",
     "user-api-qa": "npx cypress run --config-file qa.config.js --spec 'cypress/e2e/api-testing/user-api.cy.js'",
-    "user-api-staging": "npx cypress run --config-file staging.config.js --spec 'cypress/e2e/api-testing/user-api.cy.js'"
+    "user-api-staging": "npx cypress run --config-file staging.config.js --spec 'cypress/e2e/api-testing/user-api.cy.js'",
+    "data-tables-staging": "npx cypress run --config-file staging.config.js --spec 'cypress/e2e/features/data-tables-net/data-tables.cy.js' --browser chrome"
   },
   "author": "",
   "license": "ISC",

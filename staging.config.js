@@ -5,10 +5,10 @@ module.exports = defineConfig({
   ...baseConfig,
   e2e: {
     ...baseConfig.e2e,
-    baseUrl: "http://localhost:3000", // Staging URL or Preview URL
+    baseUrl: "https://datatables.net/", // Staging URL or Preview URL "http://localhost:3000"
   },
   env: {
-    projectName: "Staging API Testing",
+    projectName: "Staging Data Tables Testing",
     environment: "staging",
     authToken: "Bearer STATIC_TOKEN_123"
   }

@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test-name: [faker-register-test, cart-persistent-test] # Add spec file here
+        test-name: [faker-register-test, cart-persistent-test, data-tables-staging]
 
     steps:
       # Step 1: Checkout the repository
@@ -78,11 +78,19 @@ jobs:
           name: report-cart-persistent-test
           path: cypress/reports/merged/cart-persistent-test/
 
+      # Added new download step for data-tables-staging
+      - name: Download Test Reports - Data Tables Staging
+        uses: actions/download-artifact@v4
+        with:
+          name: report-data-tables-staging
+          path: cypress/reports/merged/data-tables-staging/
+
       # Step 3: Rename or organize index.html files
       - name: Organize Reports
         run: |
           mv cypress/reports/merged/faker-register-test/index.html cypress/reports/merged/faker-register-test.html
           mv cypress/reports/merged/cart-persistent-test/index.html cypress/reports/merged/cart-persistent-test.html
+          mv cypress/reports/merged/data-tables-staging/index.html cypress/reports/merged/data-tables-staging.html
 
       # Step 4: Generate a custom index.html file
       - name: Generate Custom Index File
@@ -95,6 +103,7 @@ jobs:
           echo '<ul>' >> cypress/reports/merged/index.html
           echo '<li><a href="faker-register-test.html">Faker Register Test Report</a></li>' >> cypress/reports/merged/index.html
           echo '<li><a href="cart-persistent-test.html">Cart Persistent Test Report</a></li>' >> cypress/reports/merged/index.html
+          echo '<li><a href="data-tables-staging.html">Data Tables Staging Test Report</a></li>' >> cypress/reports/merged/index.html
           echo '</ul>' >> cypress/reports/merged/index.html
           echo '</body>' >> cypress/reports/merged/index.html
           echo '</html>' >> cypress/reports/merged/index.html
@@ -103,7 +112,7 @@ jobs:
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: cypress/reports/merged/ # Upload all HTML reports
+          path: cypress/reports/merged/
       
       - name: Deploy to GitHub Pages
         id: deployment

@@ -31,8 +31,8 @@ module.exports = defineConfig({
 
       on("after:run", async (results) => {
         const date = dayjs().format("MMMM D, YYYY - h:mm A");
-        const projectName = config.env.projectName;
-        const environment = config.env.environment;
+        const projectName = config.env.projectName || "Test Automation Demo";
+        const environment = config.env.environment || "Web App Demo Environment";
 
         // Extract spec file names and test case details
         const specDetails = results.runs.map((run) => {
