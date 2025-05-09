@@ -37,22 +37,40 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
-      # Debug what files are actually being generated
+      # Enhanced debugging to understand report structure
       - name: Debug report directory structure
         if: always()
         run: |
           echo "Contents of cypress/reports:"
           find cypress/reports -type f | sort
+          
+          echo "Checking for index.html in reports folder:"
+          if [ -f "cypress/reports/index.html" ]; then
+            echo "Found cypress/reports/index.html ($(stat -c%s cypress/reports/index.html) bytes)"
+          else
+            echo "No cypress/reports/index.html found"
+          fi
+          
+          echo "Checking for html subfolder:"
+          if [ -d "cypress/reports/html" ]; then
+            echo "Found html subfolder with contents:"
+            find cypress/reports/html -type f | sort
+          else
+            echo "No html subfolder found"
+          fi
+          
+          echo "Is there an assets folder?"
+          find cypress/reports -name "assets" -type d | sort
       
+      # Upload the entire reports directory for maximum flexibility
       - name: Upload Individual Test Report
-        if: always()  # Upload even if tests fail
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: report-${{ matrix.test-name }}
           path: cypress/reports/
           retention-days: 30
 
-  # Simplified report consolidation approach
   deploy-report:
     needs: test
     runs-on: ubuntu-latest
@@ -73,44 +91,78 @@ jobs:
         with:
           path: temp-artifacts
       
-      # Debug what was downloaded
+      # Enhanced debugging to understand downloaded artifacts
       - name: Show artifact contents
         run: |
-          echo "Downloaded artifacts:"
+          echo "Downloaded artifacts structure:"
           find temp-artifacts -type f | sort
+          
+          echo "Checking for index.html files:"
+          find temp-artifacts -name "index.html" -type f | sort
+          
+          echo "Checking for assets folders:"
+          find temp-artifacts -name "assets" -type d | sort
       
-      # Process the reports - adapt this to match your actual report structure
+      # Improved report processing with better handling of various structures
       - name: Process reports
         run: |
           # Create directories for each test
           mkdir -p cypress/reports/merged/faker-register-test
           mkdir -p cypress/reports/merged/cart-persistent-test
           
-          # See what HTML files we have and copy them to appropriate locations
-          if [ -d "temp-artifacts/report-faker-register-test" ]; then
-            # Find all HTML files for faker test
-            find temp-artifacts/report-faker-register-test -name "*.html" -type f -exec cp {} cypress/reports/merged/faker-register-test/ \;
-            # If there's an index.html in any subdirectory, copy it specifically
-            find temp-artifacts/report-faker-register-test -name "index.html" -type f -exec cp {} cypress/reports/merged/faker-register-test/ \;
-          fi
+          process_test_artifacts() {
+            local test_name=$1
+            local target_dir="cypress/reports/merged/$test_name"
+            local source_dir="temp-artifacts/report-$test_name"
+            
+            echo "Processing $test_name reports..."
+            
+            # Case 1: index.html is directly in the artifacts root
+            if [ -f "$source_dir/index.html" ]; then
+              echo "Found index.html in root of $test_name artifacts"
+              cp -r "$source_dir"/* "$target_dir"/
+              
+              # Also need to copy assets if they exist
+              if [ -d "$source_dir/assets" ]; then
+                mkdir -p "$target_dir/assets"
+                cp -r "$source_dir/assets"/* "$target_dir/assets"/
+              fi
+              
+            # Case 2: index.html is in the html subfolder
+            elif [ -f "$source_dir/html/index.html" ]; then
+              echo "Found index.html in html subfolder of $test_name artifacts"
+              cp -r "$source_dir/html"/* "$target_dir"/
+              
+            # Case 3: Search for index.html in any subfolder
+            else
+              echo "Searching for index.html in $test_name artifacts subfolders"
+              
+              # Find the first index.html file and copy its containing directory
+              local index_path=$(find "$source_dir" -name "index.html" -type f | head -n 1)
+              
+              if [ -n "$index_path" ]; then
+                local dir_path=$(dirname "$index_path")
+                echo "Found index.html in $dir_path"
+                cp -r "$dir_path"/* "$target_dir"/
+                
+                # Look for assets in parent or sibling directories
+                local assets_path=$(find "$source_dir" -name "assets" -type d | head -n 1)
+                if [ -n "$assets_path" ]; then
+                  mkdir -p "$target_dir/assets"
+                  cp -r "$assets_path"/* "$target_dir/assets"/
+                fi
+              else
+                echo "No index.html found for $test_name"
+                echo "<html><body><h1>$test_name Report</h1><p>No HTML report found</p></body></html>" > "$target_dir/index.html"
+              fi
+            fi
+          }
           
-          if [ -d "temp-artifacts/report-cart-persistent-test" ]; then
-            # Find all HTML files for cart test
-            find temp-artifacts/report-cart-persistent-test -name "*.html" -type f -exec cp {} cypress/reports/merged/cart-persistent-test/ \;
-            # If there's an index.html in any subdirectory, copy it specifically
-            find temp-artifacts/report-cart-persistent-test -name "index.html" -type f -exec cp {} cypress/reports/merged/cart-persistent-test/ \;
-          fi
-          
-          # Create index files if they don't exist
-          if [ ! -f "cypress/reports/merged/faker-register-test/index.html" ]; then
-            echo "<html><body><h1>Faker Register Test Report</h1><p>No HTML report found</p></body></html>" > cypress/reports/merged/faker-register-test/index.html
-          fi
-          
-          if [ ! -f "cypress/reports/merged/cart-persistent-test/index.html" ]; then
-            echo "<html><body><h1>Cart Persistent Test Report</h1><p>No HTML report found</p></body></html>" > cypress/reports/merged/cart-persistent-test/index.html
-          fi
+          # Process each test's artifacts
+          process_test_artifacts "faker-register-test"
+          process_test_artifacts "cart-persistent-test"
       
-      # Create a main index file
+      # Create a main index file with better styling
       - name: Generate main index.html
         run: |
           cat << EOF > cypress/reports/merged/index.html
@@ -119,21 +171,73 @@ jobs:
           <head>
             <title>Cypress Test Reports</title>
             <style>
-              body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-              h1 { color: #333366; }
-              ul { list-style-type: none; padding: 0; }
-              li { margin: 10px 0; padding: 15px; background-color: #f5f5f5; border-radius: 5px; }
-              a { color: #0066cc; text-decoration: none; font-weight: bold; }
-              a:hover { text-decoration: underline; }
+              body { 
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+                max-width: 800px; 
+                margin: 0 auto; 
+                padding: 20px;
+                line-height: 1.6;
+              }
+              h1 { 
+                color: #333366; 
+                border-bottom: 1px solid #eee;
+                padding-bottom: 10px;
+              }
+              .report-card {
+                margin: 15px 0;
+                padding: 20px;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                border-left: 5px solid #0066cc;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                transition: all 0.3s ease;
+              }
+              .report-card:hover {
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                transform: translateY(-2px);
+              }
+              a { 
+                color: #0066cc; 
+                text-decoration: none; 
+                font-weight: 500; 
+                display: block;
+                font-size: 18px;
+              }
+              a:hover { 
+                text-decoration: underline; 
+              }
+              .timestamp { 
+                color: #666; 
+                font-size: 0.9em; 
+                margin-top: 30px; 
+                text-align: center;
+              }
+              .header {
+                display: flex;
+                align-items: center;
+                margin-bottom: 20px;
+              }
+              .logo {
+                height: 40px;
+                margin-right: 15px;
+              }
             </style>
           </head>
           <body>
-            <h1>Cypress Test Reports</h1>
-            <ul>
-              <li><a href="faker-register-test/index.html">Faker Register Test Report</a></li>
-              <li><a href="cart-persistent-test/index.html">Cart Persistent Test Report</a></li>
-            </ul>
-            <p>Generated on $(date)</p>
+            <div class="header">
+              <img src="https://www.cypress.io/images/layouts/cypress-logo.svg" alt="Cypress Logo" class="logo">
+              <h1>Cypress Test Reports</h1>
+            </div>
+            
+            <div class="report-card">
+              <a href="faker-register-test/index.html">Faker Register Test Report</a>
+            </div>
+            
+            <div class="report-card">
+              <a href="cart-persistent-test/index.html">Cart Persistent Test Report</a>
+            </div>
+            
+            <p class="timestamp">Generated on $(date)</p>
           </body>
           </html>
           EOF
@@ -141,7 +245,13 @@ jobs:
       # Debug the final merged directory structure
       - name: Show final structure
         run: |
+          echo "Final directory structure for deployment:"
           find cypress/reports/merged -type f | sort
+          
+          echo "Checking index.html files:"
+          for html in cypress/reports/merged/*/index.html; do
+            echo "Size of $html: $(stat -c%s $html) bytes"
+          done
       
       # Deploy to GitHub Pages
       - name: Upload to GitHub Pages
