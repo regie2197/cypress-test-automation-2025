@@ -108,7 +108,7 @@ describe('Data Tables Test Suite - Desktop', () => {
       });
       
 });
-describe.only('Data Tables Test Suite - iPhone 12 Pro', () => {
+describe('Data Tables Test Suite - iPhone 12 Pro', () => {
     beforeEach(() => {
         cy.visit('/')
         cy.viewport(390, 844)

@@ -8,14 +8,13 @@ module.exports = defineConfig({
   projectId: "tqyggs",
   experimentalStudio: true,
   defaultCommandTimeout: 15000,
-  retries: 3,
-  watchForFileChanges: false,
-  //requestTimeout: 15000,    // This will work with cy.request() and cy.intercept() - di ko sure kay cy.api() haha
+   //requestTimeout: 15000,    // This will work with cy.request() and cy.intercept() - di ko sure kay cy.api() haha
   //responseTimeout: 40000,
   //video: true,
+  retries: 3,
+  watchForFileChanges: false,
   e2e: {
     setupNodeEvents(on, config) {
-      
       on("after:run", async (results) => {
         const date = dayjs().format("MMMM D, YYYY - h:mm A");
         const projectName = config.env.projectName || "Test Automation Demo";
