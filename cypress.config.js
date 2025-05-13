@@ -1,6 +1,7 @@
 const { defineConfig } = require("cypress");
 const dayjs = require("dayjs");
 const sendReportToDiscord = require("./cypress/support/send-report-to-discord");
+const { tr } = require("@faker-js/faker");
 
 require("dotenv").config();
 
@@ -11,6 +12,12 @@ module.exports = defineConfig({
   retries: 3,
   watchForFileChanges: false,
   e2e: {
+    trashAssetsBeforeRuns: true,
+    excludeSpecPattern: [
+      "**/features/automation-exercise/*.cy.js",
+      "**/cypress-lighthouse/*.cy.js",
+      "**/api-testing/*.cy.js",
+    ],
     setupNodeEvents(on, config) {
       on("after:run", async (results) => {
         const date = dayjs().format("MMMM D, YYYY - h:mm A");
