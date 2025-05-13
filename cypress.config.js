@@ -10,39 +10,59 @@ module.exports = defineConfig({
   defaultCommandTimeout: 15000,
   retries: 3,
   watchForFileChanges: false,
-  //requestTimeout: 15000,    // This will work with cy.request() and cy.intercept() - di ko sure kay cy.api() haha
-  //responseTimeout: 40000,
-  //video: true,
-  reporter: "cypress-mochawesome-reporter",
-  reporterOptions: {
-    charts: true,
-    reportDir: "cypress/reports",
-    overwrite: false, // Prevent overwriting reports
-    reportPageTitle: "Regression Testing Report",
-    embeddedScreenshots: true,
-    inlineAssets: true,
-    saveAllAttempts: false,
-    html: true,
-  },
   e2e: {
     setupNodeEvents(on, config) {
-      // Register cypress-mochawesome-reporter hooks
-      require("cypress-mochawesome-reporter/plugin")(on);
-
       on("after:run", async (results) => {
         const date = dayjs().format("MMMM D, YYYY - h:mm A");
-        const projectName = config.env.projectName;
-        const environment = config.env.environment;
+        const projectName = config.env.projectName || "Test Automation Demo";
+        const environment = config.env.environment || "Web App Demo Environment";
+
+        // Log full results for debugging
+        console.log("Test results summary:", {
+          totalTests: results.totalTests,
+          totalPassed: results.totalPassed,
+          totalFailed: results.totalFailed,
+          totalSkipped: results.totalSkipped,
+          totalPending: results.totalPending
+        });
+
+        // Calculate correct counts manually
+        let manualTotalTests = 0;
+        let manualTotalPassed = 0;
+        let manualTotalFailed = 0;
+        let manualTotalSkipped = 0;
 
         // Extract spec file names and test case details
         const specDetails = results.runs.map((run) => {
           const specFileName = run.spec.name;
-          const testCases = run.tests.map((test) => ({
-            name: test.title.join(" > "),
-            state: test.state,
-          }));
+          const testCases = run.tests.map((test) => {
+            manualTotalTests++;
+            
+            if (test.state === "passed") {
+              manualTotalPassed++;
+            } else if (test.state === "failed") {
+              manualTotalFailed++;
+            } else if (test.state === "pending" || test.state === "skipped") {
+              manualTotalSkipped++;
+            }
+            
+            return {
+              name: test.title.join(" > "),
+              state: test.state,
+            };
+          });
           return { specFileName, testCases };
         });
+
+        console.log("Manually calculated counts:", {
+          totalTests: manualTotalTests,
+          totalPassed: manualTotalPassed,
+          totalFailed: manualTotalFailed,
+          totalSkipped: manualTotalSkipped
+        });
+
+        // Use manually calculated values if skipped tests are missing
+        const totalSkipped = results.totalSkipped || manualTotalSkipped;
 
         await sendReportToDiscord({
           projectName,
@@ -51,7 +71,7 @@ module.exports = defineConfig({
           totalTests: results.totalTests,
           totalPassed: results.totalPassed,
           totalFailed: results.totalFailed,
-          totalSkipped: results.totalSkipped,
+          totalSkipped: totalSkipped,
           specDetails,
         });
       });

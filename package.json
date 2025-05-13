@@ -12,18 +12,16 @@
     "faker-register-test": "npx cypress run --spec 'cypress/e2e/features/parabank/registration-faker.cy.js' --browser chrome",
     "ecom-workflow-test": "npx cypress run --spec 'cypress/e2e/features/sauce-demo/ecom-workflow.cy.js' --browser chrome",
     "user-api-qa": "npx cypress run --config-file qa.config.js --spec 'cypress/e2e/api-testing/user-api.cy.js'",
-    "user-api-staging": "npx cypress run --config-file staging.config.js --spec 'cypress/e2e/api-testing/user-api.cy.js'"
+    "user-api-staging": "npx cypress run --config-file staging.config.js --spec 'cypress/e2e/api-testing/user-api.cy.js'",
+    "data-tables-staging": "npx cypress run --config-file staging.config.js --spec 'cypress/e2e/features/data-tables-net/data-tables.cy.js' --browser chrome"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",
     "cypress": "^14.3.0",
-    "cypress-mochawesome-reporter": "^3.8.2",
     "cypress-wait-until": "^3.0.2",
-    "cypress-xpath": "^2.0.1",
-    "mochawesome-merge": "^5.0.0",
-    "mochawesome-report-generator": "^6.2.0"
+    "cypress-xpath": "^2.0.1"
   },
   "dependencies": {
     "axios": "^1.8.4",
