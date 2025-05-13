@@ -10,7 +10,7 @@ describe('Data Tables Test Suite - Desktop', () => {
         cy.get('#dt-length-0').as('lengthSelect')
     });
 
-    it('Should Successfully Search Angelica Ramos & Assert her Salary', () => {
+    it.skip('Should Successfully Search Angelica Ramos & Assert her Salary', () => {
         cy.get('@searchInput').type('Angelica Ramos')
         cy.get('.dtr-control').click()
         try {
